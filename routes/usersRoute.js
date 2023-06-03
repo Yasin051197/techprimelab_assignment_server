@@ -44,6 +44,7 @@ usersRoute.post("/login",async(req,res)=>{
 
             bcrypt.compare(password, user[0].password, function(err, result) {
                 if(result){
+                    
                     res.send({msg:"Valid User"})
                 }
                 else{
