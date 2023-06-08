@@ -1,8 +1,10 @@
 const express=require("express")
 const cors=require("cors")
+require('dotenv').config()
 const { usersRoute } = require("./routes/usersRoute")
 const { connection } = require("./config/db")
 const { projectRoute } = require("./routes/projectRoute")
+let port=process.env.port
 const app=express()
 app.use(express.json())
 app.use(cors({origin:"*"}))
@@ -18,7 +20,7 @@ app.get("/",(req,res)=>{
 })
 
 
-app.listen(8080,async()=>{
+app.listen(port,async()=>{
     try{
         await connection;
         console.log("conected")
