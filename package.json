@@ -10,6 +10,10 @@
   "engines": {
     "node": ">=14 <15"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yasin051197/techprimelab_assignment_server"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
