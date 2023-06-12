@@ -45,16 +45,25 @@ usersRoute.post("/login",async(req,res)=>{
             bcrypt.compare(password, user[0].password, function(err, result) {
                 if(result){
                     
-                    res.send({msg:"Valid User"})
+                    res.send({
+                        status:"Success",
+                        Message: "Valid Response"
+                        })
                 }
                 else{
-                    res.send({msg:"Invalid User"});
+                    res.send({
+                        status:"Failed",
+                        Message: "Invalid Response"
+                        });
                 }
             });
 
         }
         else{
-            res.send({msg:"Invalid User"});
+            res.send({
+                status:"Failed",
+                Message: "Invalid Response"
+                });
         }
        }catch(err){
         res.send({msg:"something went wrong try again"});
