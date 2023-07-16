@@ -49,6 +49,7 @@ projectRoute.put("/projects/:id",async(req,res)=>{
     res.send({msg:"Error in updating projects data,try again"});
   }
 })
+
 projectRoute.get("/projectsCounts",async(req,res)=>{
   try{
       const today = new Date();
@@ -56,20 +57,36 @@ projectRoute.get("/projectsCounts",async(req,res)=>{
       const month = today.getMonth() + 1;
       const day = today.getDate();
       const todayDate = `${year}-${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`;
-//Total count
-    let count=await Project.find().count()
+    //Total count
+  //   let count=await Project.find().count()
 
-  //counts of closed, running, registor, cancelled
-  let data=await Project.aggregate([{$group:{_id:"$status",count:{$sum:1}}},{$sort:{_id:1}}])
+  // //counts of closed, running, registor, cancelled
+  let statusCount=await Project.aggregate([{$group:{_id:"$status",count:{$sum:1}}},{$sort:{_id:1}}])
 
-//ClouserCount 
+  // //ClouserCount 
   let clousercount=await Project.find({$and:[{status:"Running"},{end_date:{$lt:todayDate}}]}).count()
 
-//for chart we get the total and closed count on behalf of their department
-    let Closeddata=await Project.aggregate([{$match:{status:"Closed"}},{$group:{_id:"$department",closedCount:{$sum:1}}},{$sort:{_id:1}}])
-    let Totaldata=await Project.aggregate([{$group:{_id:"$department",totalCount:{$sum:1}}},{$sort:{_id:1}}])
+  // //for chart we get the total and closed count on behalf of their department
+  // let Closeddata=await Project.aggregate([{$match:{status:"Closed"}},{$group:{_id:"$department",closedCount:{$sum:1}}},{$sort:{_id:1}}])
+  // let Totaldata=await Project.aggregate([{$group:{_id:"$department",totalCount:{$sum:1}}},{$sort:{_id:1}}])
+  let project = await Project.aggregate([
+    {
+      $group: {
+        _id: "$department",
+        total: { $sum: 1 },
+        closedCount: {
+          $sum: { $cond: [{ $eq: ["$status", "Closed"] }, 1, 0] },
+        },
+      },
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+  return res.send({project:project,clousercount:clousercount,statusCount:statusCount});
 
-    res.send({Totaldata:Totaldata,Closeddata:Closeddata,clousercount:clousercount,data:data,count:count})
+  // res.send({Totaldata:Totaldata,Closeddata:Closeddata,clousercount:clousercount,data:data,count:count})
+  
     
   }catch(err){
     res.send({msg:"Error in finding count of data,try again"})
